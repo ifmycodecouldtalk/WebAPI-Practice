@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 using CompanyEmployees.Extensions;
+using Contracts;
 
 namespace CompanyEmployees
 {
@@ -37,13 +38,14 @@ namespace CompanyEmployees
             services.ConfigureLoggerService();
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
+            services.AddAutoMapper(typeof(Startup));
 
 
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
         {
             if (env.IsDevelopment())
             {
@@ -54,7 +56,7 @@ namespace CompanyEmployees
                 app.UseHsts();
             }
 
-
+            app.ConfigureExceptionHandler(logger);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCors("CorsPolicy");
